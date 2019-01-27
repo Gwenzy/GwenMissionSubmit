@@ -7,7 +7,7 @@
 #include "../headers/html.h"
 #include "stdio.h"
 #include "stdlib.h"
-#include "../headers/sockets.h"
+#include "../headers/num_methods.h"
 #include "memory.h"
 #include "sys/socket.h"
 

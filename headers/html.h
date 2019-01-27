@@ -5,7 +5,7 @@
 #ifndef GWENMISSIONSUBMIT_HTML_H
 #define GWENMISSIONSUBMIT_HTML_H
 
-#include "sockets.h"
+#include "num_methods.h"
 
 void handlePOST(SOCKET* connection);
 void handleGET(SOCKET* connection, char* page);

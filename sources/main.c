@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "../headers/sockets.h"
+#include "../headers/num_methods.h"
 #include "../headers/html.h"
 #include "../headers/struct_student.h"
 #include "../headers/constants.h"
