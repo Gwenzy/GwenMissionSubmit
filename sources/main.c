@@ -265,6 +265,7 @@ int main(int argc, char *argv[]){
             if(ch=='r'||ch=='R'){
                 removeStudent(waiting, 1, &waitingFlag);
             }
+            else
             loop_list = 0;
         }
     }
