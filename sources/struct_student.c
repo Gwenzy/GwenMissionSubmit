@@ -9,6 +9,8 @@
 #include "../headers/constants.h"
 
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfor-loop-analysis"
 void removeStudent(student *waiting, int num, volatile int *waitingFlag) {
     while(!*waitingFlag) {}
     *waitingFlag = 0;

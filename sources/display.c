@@ -51,6 +51,8 @@ void printMenu(int *loop_list, int *exitProg, int port, student *waiting, volati
 
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfor-loop-analysis"
 void printMenuRemoveStudent(student *waiting, volatile int *waitingFlag) {
     clrscr();
     printf("------Waiting student remove------\n\n\n\n");
@@ -81,6 +83,7 @@ void printMenuRemoveStudent(student *waiting, volatile int *waitingFlag) {
         return;
     removeStudent(waiting, (int)num, waitingFlag);
 }
+#pragma clang diagnostic pop
 
 int mygetch ( void )
 {

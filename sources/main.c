@@ -30,7 +30,11 @@ volatile int waitingFlag = 1;
 student waiting[WAIT_LEN];
 
 
-
+/**
+ * Thread: Infinite loop displaying the list of students waiting on the screen
+ * @param void
+ * @return void
+ */
 void *thread_list(void* arg){
     while(!exitProg) {
         if (loop_list) {
@@ -51,33 +55,44 @@ void *thread_list(void* arg){
     }
 
     (void) arg;
+    return NULL;
 }
 
+/**
+ * Thread: Web server
+ * @param void
+ * @return void
+ */
 void *thread_socket(void* arg){
 
+    //Socket creation
     if(sock == INVALID_SOCKET)
     {
         perror("socket()");
         exit(errno);
     }
 
+    //Prevents adress alreaedy used
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){ 1 }, sizeof(int)) < 0)
         perror("setsockopt(SO_REUSEADDR) failed");
 
-    SOCKADDR_IN sin = { 0 };
-
-    sin.sin_addr.s_addr = htonl(INADDR_ANY); /* nous sommes un serveur, nous acceptons n'importe quelle adresse */
-
-    sin.sin_family = AF_INET;
-
-    sin.sin_port = htons(port?port:DEFAULT_PORT);
-
-    if(bind (sock, (SOCKADDR *) &sin, sizeof sin) == SOCKET_ERROR)
+    //Socket config
     {
-        perror("bind()");
-        exit(errno);
+        SOCKADDR_IN sin = {0};
+
+        sin.sin_addr.s_addr = htonl(INADDR_ANY); /* nous sommes un serveur, nous acceptons n'importe quelle adresse */
+
+        sin.sin_family = AF_INET;
+
+        sin.sin_port = htons(port ? port : DEFAULT_PORT);
+
+        if (bind(sock, (SOCKADDR *) &sin, sizeof sin) == SOCKET_ERROR) {
+            perror("bind()");
+            exit(errno);
+        }
     }
 
+    //Listening for max 20 connections
     if(listen(sock, 20) == SOCKET_ERROR)
     {
         perror("listen()");
@@ -88,7 +103,9 @@ void *thread_socket(void* arg){
 
     unsigned int sinsize = sizeof csin;
 
-    while(1) {
+
+
+    while(!exitProg) {
         csock = accept(sock, (SOCKADDR *) &csin, &sinsize);
 
         if (csock == INVALID_SOCKET) {
@@ -96,18 +113,17 @@ void *thread_socket(void* arg){
             exit(errno);
         }
 
-        char buffer[65535];
+        char buffer[4096];
         int n = 0;
 
-        if ((n = recv(csock, buffer, sizeof buffer - 1, 0)) < 0) {
+        if ((n = (int) recv(csock, buffer, sizeof buffer - 1, 0)) < 0) {
             perror("recv()");
             exit(errno);
         }
 
         buffer[n] = '\0';
-        char buffer2[65535];
+        char buffer2[4096];
         strcpy(buffer2, buffer);
-
         char *ptr;
         const char *s = " ";
         /* get the first token */
@@ -137,7 +153,6 @@ void *thread_socket(void* arg){
             if(strcmp(ptr, "/valid.gweb")==0){
                 char *ptr2;
                 const char *s2 = "\r\n";
-                /* get the first token */
                 ptr2 = strtok(buffer2, s2);
                 int mustStop = 1;
                 student std;
@@ -145,6 +160,7 @@ void *thread_socket(void* arg){
                     if(!strstr(ptr2, ":")&&!strstr(ptr2, "/")){
                         mustStop = 0;
                     }
+
                     else
                         ptr2 = strtok(NULL, s2);
                 }
@@ -154,21 +170,24 @@ void *thread_socket(void* arg){
                 char xp[10];
 
                 const char *s3 = "&";
-                const char *s4 = "=";
 
 
                 ptr2 = strtok(ptr2, s3);
-                for(int i=5; i<strlen(ptr2);i++){
+                int i=5;
+                for(;i<strlen(ptr2);i++){
                     name[i-5] = ptr2[i];
                 }
+                name[i-5]='\0';
                 ptr2 = strtok(NULL, s3);
-                for(int i=8; i<strlen(ptr2);i++){
+                for(i=8; i<strlen(ptr2);i++){
                     mission[i-8] = ptr2[i];
                 }
+                mission[i-8]='\0';
                 ptr2 = strtok(NULL, s3);
-                for(int i=3; i<strlen(ptr2);i++){
+                for(i=3; i<strlen(ptr2);i++){
                     xp[i-3] = ptr2[i];
                 }
+                xp[i-3]='\0';
 
 
 
@@ -177,7 +196,6 @@ void *thread_socket(void* arg){
                 strcpy(std.mission, mission);
                 std.xp = (int) strtoumax(xp, NULL, 10);
                 addStudent(waiting, &waitingFlag, std);
-
 
             }
 
@@ -188,19 +206,23 @@ void *thread_socket(void* arg){
     }
 
     (void) arg;
+    return NULL;
 }
 
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cert-msc32-c"
+#pragma ide diagnostic ignored "cert-msc30-c"
 int main(int argc, char *argv[]){
     for(int i=1; i<argc; i++){
         if(!strcmp(argv[i], "-debug")) {
 
-            srand(time(NULL));
-            for(int i=1; i<=5; i++){
+            srand((unsigned int) time(NULL));
+            for(int i2=1; i2<=5; i2++){
                 student s;
                 int xp = rand()%150;
                 strcpy(s.mission, itoa(xp, 10));
-                strcpy(s.name, itoa(i, 10));
+                strcpy(s.name, itoa(i2, 10));
                 s.xp = xp;
                 addStudent(waiting, &waitingFlag, s);
             }
@@ -248,6 +270,7 @@ int main(int argc, char *argv[]){
     closesocket(sock);
     return 0;
 }
+#pragma clang diagnostic pop
 
 
 

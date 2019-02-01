@@ -16,8 +16,8 @@
 
 void handlePOST(SOCKET *connection){
     char response[1024] = HEADER;
-    char body[512] = "<html><head></head><body><p>OK</p></body></html>";
-    strcat(response, itoa(strlen(body), 10));
+    char body[512] = "<html><head></head><body><p>La demande a été effectuée et va être ajoutée à la liste. <a href=\"/\">Cliquez ici</a> pour retourner à l'accueil</p></body></html>";
+    strcat(response, itoa((int) strlen(body), 10));
     strcat(response, "\r\n\r\n");
     strcat(response, body);
 
@@ -32,7 +32,6 @@ void handlePOST(SOCKET *connection){
 void handleGET(SOCKET *connection, char *page) {
 
 
-
     char prefix[128] = "..";
     char *ptr;
     const char *s = "?";
@@ -41,7 +40,7 @@ void handleGET(SOCKET *connection, char *page) {
     if( access( prefix, F_OK ) != -1 ) {
         char* fileContents = readFile(page);
         char response[4096] = HEADER;
-        strcat(response, itoa(strlen(fileContents), 10));
+        strcat(response, itoa((int) strlen(fileContents), 10));
         strcat(response, "\r\n\r\n");
         strcat(response, fileContents);
 
@@ -55,7 +54,7 @@ void handleGET(SOCKET *connection, char *page) {
         char response[512] = HEADER_404;
         char* body = "<html><head><title>404 Not Found</title></head><body><p>404</p></body></html>";
 
-        strcat(response, itoa(strlen(body),10));
+        strcat(response, itoa((int) strlen(body), 10));
         strcat(response, "\r\n\r\n");
         strcat(response, body);
 
@@ -76,10 +75,10 @@ char *readFile(char *fileName) {
         fseek (f, 0, SEEK_END);
         length = ftell (f);
         fseek (f, 0, SEEK_SET);
-        buffer = malloc(length);
+        buffer = malloc((size_t) length);
         if (buffer)
         {
-            fread (buffer, 1, length, f);
+            fread (buffer, 1, (size_t) length, f);
         }
         fclose (f);
     }
