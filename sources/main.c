@@ -261,7 +261,10 @@ int main(int argc, char *argv[]){
     while(!exitProg) {
         printMenu(&loop_list, &exitProg, port, waiting, &waitingFlag);
         if(loop_list) {
-            mygetch();
+            int ch = mygetch();
+            if(ch=='r'||ch=='R'){
+                removeStudent(waiting, 1, &waitingFlag);
+            }
             loop_list = 0;
         }
     }

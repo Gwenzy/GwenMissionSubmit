@@ -34,7 +34,7 @@ void addStudent(student *waiting, volatile int *waitingFlag, student student) {
         do{
             if(waiting[index].name[0]== '\0')
                 foundPlace = 1;
-            else if(xp<=waiting[index].xp)
+            else if(xp<waiting[index].xp)
                 foundPlace = 2;
             else
                 index++;
