@@ -96,8 +96,6 @@ int mygetch ( void )
     tcsetattr ( STDIN_FILENO, TCSANOW, &newt );
     ch = getchar();
     tcsetattr ( STDIN_FILENO, TCSANOW, &oldt );
-    printf("%d\n", ch);
-    sleep(2);
     return ch;
 }
 char * getLine(void) {
